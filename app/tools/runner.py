@@ -1,7 +1,8 @@
 """Common wrapper: role check -> DB-enforced query -> audit -> result. Fail closed on audit failure."""
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from app.auth.context import require_identity
 from app.db.audit import write_audit

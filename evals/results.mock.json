@@ -3,8 +3,8 @@
   "mode": "mock",
   "llm": "scripted malicious/compliant model",
   "tier": "all",
-  "sha": "6f36b09",
-  "when": "2026-10-03 01:46 UTC"
+  "sha": "edbcd2a",
+  "when": "2026-10-03 06:37 UTC"
  },
  "summary": {
   "attack_cases": 76,

@@ -1,0 +1,97 @@
+name: ci
+
+on:
+  push: {branches: [main]}
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      real_llm:
+        description: "Also run the real-provider LLM-in-the-loop eval (needs API key secrets)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-throwaway-password
+          POSTGRES_DB: clinicalgate_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      # Ephemeral service-container values for a throwaway database: not secrets.
+      DATABASE_URL: postgresql://postgres:ci-throwaway-password@localhost:5432/clinicalgate_ci
+      DATABASE_URL_APP: postgresql://ignored:ci-app-password@localhost:5432/clinicalgate_ci
+      CG_APP_PASSWORD: ci-app-password
+      JWT_SECRET: ci-only-jwt-secret-0123456789-abcdefghij
+      DEMO_PASSWORD: demo-password
+      PASSWORD_HASH_ITERATIONS: "20000"
+      LLM_PROVIDER: heuristic
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - run: pip install -r requirements.lock
+      - name: Lint
+        run: ruff check .
+      - name: Migrate and seed (disposable CI database)
+        run: python -m db.migrate && python -m db.seed.generate
+      - name: Unit, RLS, tool and API tests
+        run: pytest
+      - name: Red-team eval gate (fails the build on ANY leak)
+        run: python -m evals.runner --tier all --llm mock --out evals/report.md
+      - name: Publish eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: |
+            evals/report.md
+            evals/results.mock.json
+      - name: Job summary
+        if: always()
+        run: head -30 evals/report.md >> "$GITHUB_STEP_SUMMARY"
+
+  eval-real:
+    # Optional and manual: real-provider numbers. Never required for merge; secrets stay out of fork PRs.
+    if: github.event_name == 'workflow_dispatch' && inputs.real_llm
+    needs: verify
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: ci-throwaway-password, POSTGRES_DB: clinicalgate_ci}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      DATABASE_URL: postgresql://postgres:ci-throwaway-password@localhost:5432/clinicalgate_ci
+      DATABASE_URL_APP: postgresql://ignored:ci-app-password@localhost:5432/clinicalgate_ci
+      CG_APP_PASSWORD: ci-app-password
+      JWT_SECRET: ci-only-jwt-secret-0123456789-abcdefghij
+      DEMO_PASSWORD: demo-password
+      PASSWORD_HASH_ITERATIONS: "20000"
+      LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'anthropic' }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip, cache-dependency-path: requirements.lock}
+      - run: pip install -r requirements.lock
+      - run: python -m db.migrate && python -m db.seed.generate
+      - run: python -m evals.runner --tier llm --llm real --out evals/report.md
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: eval-report-real, path: "evals/report.md\nevals/results.real.json"}

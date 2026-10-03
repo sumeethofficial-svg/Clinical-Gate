@@ -33,7 +33,7 @@ def test_gate_fails_when_tool_layer_leaks_a_canary():
         r.admin.close()
     s = summarize(results, 0.95)
     assert not s["gate_ok"] and s["leaking_cases"] == 2 and s["leak_rate"] == 1.0
-    assert any(l["kind"] == "canary" for res in results for l in res.leaks)
+    assert any(lk["kind"] == "canary" for res in results for lk in res.leaks)
 
 
 def test_gate_fails_when_manager_gets_a_small_cell():
@@ -74,8 +74,8 @@ def test_gate_fails_when_a_legit_flow_breaks(admin):
 
 def test_db_denies_an_app_layer_mistake(monkeypatch):
     """Defense in depth: if the app layer wrongly selected a hidden column, Postgres still refuses."""
-    from app.policy import rules
     from app.auth import service
+    from app.policy import rules
     monkeypatch.setitem(rules.PATIENT_COLUMNS, "front_desk", ("id", "mrn", "full_name", "phone", "email"))
     ident = service.resolve_identity(service.login("fd_sam", "demo-password")["access_token"])
     res = call_tool(ident, "search_patients", {"query": "Ellison"})

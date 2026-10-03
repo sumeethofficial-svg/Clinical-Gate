@@ -20,7 +20,7 @@ import subprocess
 import sys
 import time
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import jwt
@@ -332,7 +332,7 @@ def _git_sha() -> str:
 
 def write_report(results, summary, meta, out_path: Path, audit_counts: dict, integrity_ok: bool):
     pct = lambda x: f"{x:.1%}"  # noqa: E731
-    L = [f"# ClinicalGate evaluation report", "",
+    L = ["# ClinicalGate evaluation report", "",
          f"- Mode: **{meta['mode']}** ({meta['llm']})  |  Tier: `{meta['tier']}`  |  Commit: `{meta['sha']}`  |  Run: {meta['when']}",
          "- Data: synthetic only (seeded Faker). Ground truth read as admin; system under test connects as per-persona low-privilege roles.", "",
          "## Summary", "", "| Metric | Value | Target |", "|---|---|---|",
@@ -357,7 +357,7 @@ def write_report(results, summary, meta, out_path: Path, audit_counts: dict, int
         L.append(f"| {c.replace('legit_', '')} | {len(rs)} | {sum(1 for r in rs if r.passed)} |")
     L += ["", "## Case detail", "", "| Case | Category | Persona | Tier | Result | Notes |", "|---|---|---|---|---|---|"]
     for r in results:
-        note = "; ".join([f"LEAK {l['kind']}:{l['detail']}" for l in r.leaks] + r.failures)[:160].replace("|", "/")
+        note = "; ".join([f"LEAK {lk['kind']}:{lk['detail']}" for lk in r.leaks] + r.failures)[:160].replace("|", "/")
         L.append(f"| {r.id} | {r.category} | {r.persona} | {r.tier} | {'pass' if r.passed else '**FAIL**'} | {note} |")
     out_path.write_text("\n".join(L) + "\n")
 
@@ -395,7 +395,7 @@ def main(argv=None) -> int:
         summary["gate_ok"] = False
         summary["gate_reasons"].append("patients table damaged during run")
     llm_label = "scripted malicious/compliant model" if mode == "mock" else f"{provider}:{get_settings().anthropic_model if provider == 'anthropic' else get_settings().openai_model}"
-    meta = {"mode": mode, "llm": llm_label, "tier": args.tier, "sha": _git_sha(), "when": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}
+    meta = {"mode": mode, "llm": llm_label, "tier": args.tier, "sha": _git_sha(), "when": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")}
     out = Path(args.out)
     write_report(results, summary, meta, out, audit_counts, integrity_ok)
     out.with_name(f"results.{mode}.json").write_text(json.dumps({"meta": meta, "summary": summary, "cases": [asdict(r) for r in results]}, indent=1, default=str))
@@ -403,7 +403,7 @@ def main(argv=None) -> int:
           f"conformance {summary['attack_conformance']:.1%} | gate {'PASS' if summary['gate_ok'] else 'FAIL'}")
     for r in results:
         if not r.passed:
-            print(f"  FAIL {r.id}: {[l['kind'] + ':' + l['detail'] for l in r.leaks]} {r.failures}")
+            print(f"  FAIL {r.id}: {[lk['kind'] + ':' + lk['detail'] for lk in r.leaks]} {r.failures}")
     if args.no_gate:
         return 0
     bad = summary.get("unmet_attack_expectations") if mode == "mock" else None

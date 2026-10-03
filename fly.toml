@@ -1,0 +1,27 @@
+# Fly.io alternative. Create a Postgres cluster/attach it so DATABASE_URL (admin) is set as a secret, then:
+#   fly launch --no-deploy --copy-config
+#   fly secrets set CG_APP_PASSWORD=$(openssl rand -hex 24) JWT_SECRET=$(openssl rand -hex 32) DEMO_PASSWORD=<public demo password>
+#   fly deploy
+app = "clinicalgate"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  LLM_PROVIDER = "heuristic"
+  PORT = "8000"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/health"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "40s"

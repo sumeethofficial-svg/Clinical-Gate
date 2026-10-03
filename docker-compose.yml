@@ -1,0 +1,33 @@
+# Synthetic data only. The credentials below are throwaway local-dev values; never reuse them anywhere real.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: clinicalgate_admin
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-local-admin-password}
+      POSTGRES_DB: clinicalgate
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinicalgate_admin -d clinicalgate"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes: [pgdata:/var/lib/postgresql/data]
+    ports: ["5432:5432"]
+  api:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      # admin URL is used ONLY by the entrypoint bootstrap, then unset before the web process starts
+      DATABASE_URL: postgresql://clinicalgate_admin:${POSTGRES_ADMIN_PASSWORD:-local-admin-password}@db:5432/clinicalgate
+      CG_APP_PASSWORD: ${CG_APP_PASSWORD:-local-app-password}
+      JWT_SECRET: ${JWT_SECRET:-local-dev-only-jwt-secret-change-me-0123456789}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-password}
+      LLM_PROVIDER: ${LLM_PROVIDER:-heuristic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-5-5}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+    ports: ["8000:8000"]
+volumes:
+  pgdata:

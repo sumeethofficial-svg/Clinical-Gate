@@ -1,6 +1,6 @@
 # ClinicalGate evaluation report
 
-- Mode: **mock** (scripted malicious/compliant model)  |  Tier: `all`  |  Commit: `6f36b09`  |  Run: 2026-10-03 01:46 UTC
+- Mode: **mock** (scripted malicious/compliant model)  |  Tier: `all`  |  Commit: `edbcd2a`  |  Run: 2026-10-03 06:37 UTC
 - Data: synthetic only (seeded Faker). Ground truth read as admin; system under test connects as per-persona low-privilege roles.
 
 ## Summary

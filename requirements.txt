@@ -1,0 +1,13 @@
+# Direct runtime dependencies, exactly pinned. Full transitive pin set: requirements.lock
+fastapi==0.142.2
+uvicorn==0.54.0
+psycopg==3.3.6
+psycopg-binary==3.3.6
+pydantic==2.13.5
+PyJWT==2.15.1
+Faker==40.40.0
+fastmcp==4.0.10
+httpx==0.28.1
+PyYAML==6.0.3
+anthropic==1.11.0
+openai==3.24.0

@@ -59,7 +59,7 @@ def test_forged_and_malformed_tokens_rejected(admin):
         "unknown_user": issue_token(SECRET(), user_id=99999, role="nurse"),
         "bad_role_value": issue_token(SECRET(), user_id=uid(admin, "fd_sam"), role="admin"),
     }
-    for name, tok in cases.items():
+    for tok in cases.values():
         with pytest.raises(AuthError):
             service.resolve_identity(tok)
     assert service.resolve_identity(good).role == "front_desk"
