@@ -45,3 +45,11 @@ def load_settings() -> Settings:
 def admin_database_url() -> str:
     """Owner/admin connection. Used ONLY by migrations, seeding and the eval ground-truth oracle."""
     return _required("DATABASE_URL")
+
+
+from functools import lru_cache  # noqa: E402
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    return load_settings()
