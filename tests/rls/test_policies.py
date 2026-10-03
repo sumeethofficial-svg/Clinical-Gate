@@ -197,24 +197,38 @@ def test_small_cells_inside_a_large_enough_population_are_suppressed(persona, cl
     assert all(s and n is None for _, n, s, _ in rows)
 
 
-def test_second_breakdown_of_same_population_is_refused(persona, clean_state):
-    with persona("manager_kim") as c:
+def test_second_breakdown_never_exposes_a_suppressed_cell_by_subtraction(persona, clean_state):
+    with persona("manager_kim", commit=True) as c:
         first = cohort(c, "age_band", dx="E11")
-        assert any(not s for _, _, s, _ in first)
-    with persona("manager_kim") as c:
+    with persona("manager_kim", commit=True) as c:
         second = cohort(c, "sex", dx="E11")
-    # E11 population is large; both partitions are fully visible OR the second one is refused/suppressed.
-    for _, n, s, _ in second:
-        assert s or n >= 5
+    # Either both partitions are fully visible (nothing to recover) or the later one is refused.
+    if any(s for _, _, s, _ in first) or any(s for _, _, s, _ in second):
+        assert second[0][2] is True and "refused" in second[0][3]
+    else:
+        assert all(n >= 5 for _, n, _, _ in first + second)
 
 
 def test_hidden_then_other_breakdown_is_refused(persona, clean_state):
-    with persona("manager_kim") as c:
+    with persona("manager_kim", commit=True) as c:
         first = cohort(c, "sex", dx="A15")           # 6 patients: every F/M cell is hidden
         assert all(s for _, _, s, _ in first)
-    with persona("manager_kim") as c:
+    with persona("manager_kim", commit=True) as c:
         second = cohort(c, "encounter_class", dx="A15")
     assert second[0][2] is True and "refused" in second[0][3]
+
+
+def test_differencing_guard_blocks_near_duplicate_cohorts(persona, admin, clean_state):
+    """A cell that differs from an earlier released cell by 1-4 patients would reveal them by subtraction."""
+    uid = admin.execute("SELECT id FROM users WHERE username='manager_kim'").fetchone()[0]
+    admin.execute(
+        "INSERT INTO cohort_release_log (user_id, query_id, label, ids) "
+        "SELECT %s, gen_random_uuid(), 'cell:probe:F-minus-two', array_agg(id) FROM "
+        "(SELECT id FROM patients WHERE sex='F' ORDER BY id OFFSET 2) s", (uid,))
+    with persona("manager_kim", commit=True) as c:
+        rows = {b: (n, s, note) for b, n, s, note in cohort(c, "sex")}
+    assert rows["F"][1] is True and rows["F"][2] == "suppressed: differencing guard" and rows["F"][0] is None
+    assert rows["M"][1] is False and rows["M"][0] >= 5
 
 
 def test_invalid_inputs_are_rejected(persona, clean_state):

@@ -65,13 +65,13 @@ def persona(admin):
     opened = []
 
     @contextmanager
-    def _persona(username: str, set_provider: bool = True):
+    def _persona(username: str, set_provider: bool = True, commit: bool = False):
         row = admin.execute("SELECT id, role, provider_id FROM users WHERE username=%s", (username,)).fetchone()
         uid, role, prov = row
         conn = psycopg.connect(dsn_for(os.environ["DATABASE_URL_APP"], role))
         opened.append(conn)
         try:
-            with conn.transaction(force_rollback=True):
+            with conn.transaction(force_rollback=not commit):
                 conn.execute(f"SET LOCAL ROLE cg_{role}")
                 conn.execute("SELECT set_config('app.user_id', %s, true), set_config('app.provider_id', %s, true)",
                              (str(uid), str(prov) if (prov and set_provider) else ""))
