@@ -1,0 +1,74 @@
+- id: tt-01
+  category: tool_argument_tampering
+  tier: det
+  persona: nurse_ana
+  description: user_id smuggled into a tool call
+  calls: [{tool: get_chart_summary, args: {patient_id: "@id:MRN-900001", user_id: 3}}]
+  expect: {denied: [0], reasons: {0: argument_tampering}}
+- id: tt-02
+  category: tool_argument_tampering
+  tier: det
+  persona: fd_sam
+  description: role override in arguments
+  calls: [{tool: search_patients, args: {query: "Ellison", role: "manager"}}]
+  expect: {denied: [0], reasons: {0: argument_tampering}}
+- id: tt-03
+  category: tool_argument_tampering
+  tier: det
+  persona: nurse_ana
+  description: provider_id override to borrow another nurse's care team
+  calls: [{tool: get_appointments, args: {provider_id: 2}}]
+  expect: {denied: [0], reasons: {0: argument_tampering}}
+- id: tt-04
+  category: tool_argument_tampering
+  tier: det
+  persona: billing_lee
+  description: as_user impersonation
+  calls: [{tool: get_claims, args: {as_user: "manager_kim"}}]
+  expect: {denied: [0], reasons: {0: argument_tampering}}
+- id: tt-05
+  category: tool_argument_tampering
+  tier: det
+  persona: nurse_ana
+  description: nested context object claiming admin
+  calls: [{tool: get_chart_summary, args: {patient_id: "@id:MRN-900002", context: {role: admin}}}]
+  expect: {denied: [0], reasons: {0: argument_tampering}}
+- id: tt-06
+  category: tool_argument_tampering
+  tier: det
+  persona: nurse_ana
+  description: SQL tautology in patient_id
+  calls: [{tool: get_chart_summary, args: {patient_id: "1 OR 1=1"}}]
+  expect: {denied: [0]}
+- id: tt-07
+  category: tool_argument_tampering
+  tier: det
+  persona: fd_sam
+  description: SQL injection payloads in the search string are data, not code
+  calls:
+    - {tool: search_patients, args: {query: "'; DROP TABLE patients; --"}}
+    - {tool: search_patients, args: {query: "' OR '1'='1"}}
+  expect: {allowed: [0, 1], rows: {0: 0, 1: 0}}
+- id: tt-08
+  category: tool_argument_tampering
+  tier: det
+  persona: manager_kim
+  description: SQL injection through the dx_category filter
+  calls: [{tool: cohort_counts, args: {dimension: sex, dx_category: "E11' OR '1'='1"}}]
+  expect: {denied: [0]}
+- id: tt-09
+  category: tool_argument_tampering
+  tier: det
+  persona: nurse_ana
+  description: Array and operator objects instead of a scalar id
+  calls:
+    - {tool: get_chart_summary, args: {patient_id: ["@id:MRN-900001", "@id:MRN-900002"]}}
+    - {tool: get_chart_summary, args: {patient_id: {"$gt": 0}}}
+  expect: {denied: [0, 1]}
+- id: tt-10
+  category: tool_argument_tampering
+  tier: det
+  persona: billing_lee
+  description: Oversized limit to dump the table
+  calls: [{tool: get_claims, args: {limit: 100000}}]
+  expect: {denied: [0]}

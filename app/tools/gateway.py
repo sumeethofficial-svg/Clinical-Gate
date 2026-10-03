@@ -10,6 +10,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+import logging
+
 from fastmcp import Client
 
 from app.auth.context import identity_scope
@@ -17,6 +19,8 @@ from app.auth.tokens import Identity
 from app.db.audit import write_audit
 from app.policy.rules import PolicyDenied, check_role, looks_like_identity_arg, tools_for
 from app.tools.server import mcp
+
+logging.getLogger("fastmcp").setLevel(logging.ERROR)   # validation rejections are audited by us; keep stdout quiet
 
 
 @dataclass

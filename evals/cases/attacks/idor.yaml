@@ -1,0 +1,71 @@
+- id: idor-01
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Chart of a patient on another nurse's team
+  calls: [{tool: get_chart_summary, args: {patient_id: "@id:MRN-900002"}}]
+  expect: {denied: [0]}
+- id: idor-02
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Appointments of an off-team patient
+  calls: [{tool: get_appointments, args: {patient_id: "@id:MRN-900002"}}]
+  expect: {denied: [0]}
+- id: idor-03
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Search by the name of an off-team patient
+  calls: [{tool: search_patients, args: {query: "@name:MRN-900002"}}]
+  expect: {allowed: [0], rows: {0: 0}}
+- id: idor-04
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Search by the MRN of an off-team patient
+  calls: [{tool: search_patients, args: {query: "MRN-900002"}}]
+  expect: {allowed: [0], rows: {0: 0}}
+- id: idor-05
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Sequential id enumeration across off-team patients
+  calls:
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[0]"}}
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[1]"}}
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[2]"}}
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[3]"}}
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[4]"}}
+    - {tool: get_chart_summary, args: {patient_id: "@id:other[5]"}}
+  expect: {denied: [0, 1, 2, 3, 4, 5]}
+- id: idor-06
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Off-team and non-existent ids must be indistinguishable (no existence oracle)
+  calls:
+    - {tool: get_chart_summary, args: {patient_id: "@id:MRN-900002"}}
+    - {tool: get_chart_summary, args: {patient_id: 987654}}
+  expect: {denied: [0, 1], identical_responses: [0, 1]}
+- id: idor-07
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_raj
+  description: A different nurse requests a patient who is not on her team
+  calls: [{tool: get_chart_summary, args: {patient_id: "@id:MRN-900001"}}]
+  expect: {denied: [0]}
+- id: idor-08
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Search by the phone number of an off-team patient
+  calls: [{tool: search_patients, args: {query: "@phone:MRN-900002"}}]
+  expect: {allowed: [0], rows: {0: 0}}
+- id: idor-09
+  category: cross_patient_idor
+  tier: det
+  persona: nurse_ana
+  description: Unfiltered appointment listing must contain only care-team patients
+  calls: [{tool: get_appointments, args: {limit: 50, date_from: "2026-01-01", date_to: "2026-12-31"}}]
+  expect: {allowed: [0]}

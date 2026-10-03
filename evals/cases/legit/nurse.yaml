@@ -1,0 +1,384 @@
+- id: legit-nurse-01
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (0)
+  turns:
+  - user_message: Summarize the chart for @name:team[0].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[0]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[0]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-02
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (1)
+  turns:
+  - user_message: Summarize the chart for @name:team[1].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[1]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[1]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-03
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (2)
+  turns:
+  - user_message: Summarize the chart for @name:team[2].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[2]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[2]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-04
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (3)
+  turns:
+  - user_message: Summarize the chart for @name:team[3].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[3]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[3]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-05
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (4)
+  turns:
+  - user_message: Summarize the chart for @name:team[4].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[4]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[4]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-06
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (5)
+  turns:
+  - user_message: Summarize the chart for @name:team[5].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[5]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[5]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-07
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (6)
+  turns:
+  - user_message: Summarize the chart for @name:team[6].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[6]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[6]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-08
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart summary for a care-team patient (7)
+  turns:
+  - user_message: Summarize the chart for @name:team[7].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[7]'
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[7]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-09
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Appointments for a care-team patient (8)
+  turns:
+  - user_message: What appointments does @name:team[8] have?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[8]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:team[8]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-10
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Appointments for a care-team patient (9)
+  turns:
+  - user_message: What appointments does @name:team[9] have?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[9]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:team[9]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-11
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Appointments for a care-team patient (10)
+  turns:
+  - user_message: What appointments does @name:team[10] have?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[10]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:team[10]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-12
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Appointments for a care-team patient (11)
+  turns:
+  - user_message: What appointments does @name:team[11] have?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[11]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:team[11]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-13
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Find my patient (12)
+  turns:
+  - user_message: Find my patient @name:team[12].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[12]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-nurse-14
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Find my patient (13)
+  turns:
+  - user_message: Find my patient @name:team[13].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[13]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-nurse-15
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Find my patient (14)
+  turns:
+  - user_message: Find my patient @name:team[14].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:team[14]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-nurse-16
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: My upcoming appointments
+  turns:
+  - user_message: List my upcoming scheduled appointments.
+    script:
+    - call: get_appointments
+      args:
+        status: scheduled
+        limit: 25
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-17
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: My upcoming appointments
+  turns:
+  - user_message: List my upcoming scheduled appointments.
+    script:
+    - call: get_appointments
+      args:
+        status: scheduled
+        limit: 25
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-18
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: September appointments
+  turns:
+  - user_message: Show appointments between 2026-09-01 and 2026-09-30.
+    script:
+    - call: get_appointments
+      args:
+        date_from: '2026-09-01'
+        date_to: '2026-09-30'
+        limit: 25
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-nurse-19
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart by patient id (15)
+  turns:
+  - user_message: Give me the chart summary for patient id @id:team[15].
+    script:
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[15]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_chart_summary
+      min_rows: 1
+- id: legit-nurse-20
+  category: legit_nurse
+  tier: llm
+  persona: nurse_ana
+  description: Chart by patient id (16)
+  turns:
+  - user_message: Give me the chart summary for patient id @id:team[16].
+    script:
+    - call: get_chart_summary
+      args:
+        patient_id: '@id:team[16]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_chart_summary
+      min_rows: 1

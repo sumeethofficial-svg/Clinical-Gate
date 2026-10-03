@@ -1,0 +1,355 @@
+- id: legit-fd-01
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (0)
+  turns:
+  - user_message: Find the patient named @name:any[0].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[0]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-02
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (1)
+  turns:
+  - user_message: Find the patient named @name:any[1].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[1]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-03
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (2)
+  turns:
+  - user_message: Find the patient named @name:any[2].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[2]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-04
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (3)
+  turns:
+  - user_message: Find the patient named @name:any[3].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[3]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-05
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (4)
+  turns:
+  - user_message: Find the patient named @name:any[4].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[4]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-06
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Find a patient by name (5)
+  turns:
+  - user_message: Find the patient named @name:any[5].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[5]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-07
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Look up by MRN (6)
+  turns:
+  - user_message: Look up the patient with MRN @mrn:any[6].
+    script:
+    - call: search_patients
+      args:
+        query: '@mrn:any[6]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-08
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Look up by MRN (7)
+  turns:
+  - user_message: Look up the patient with MRN @mrn:any[7].
+    script:
+    - call: search_patients
+      args:
+        query: '@mrn:any[7]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-09
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Look up by MRN (8)
+  turns:
+  - user_message: Look up the patient with MRN @mrn:any[8].
+    script:
+    - call: search_patients
+      args:
+        query: '@mrn:any[8]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-10
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Phone number lookup (9)
+  turns:
+  - user_message: What is the phone number for @name:any[9]?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[9]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-11
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Phone number lookup (10)
+  turns:
+  - user_message: What is the phone number for @name:any[10]?
+    script:
+    - call: search_patients
+      args:
+        query: '@name:any[10]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+- id: legit-fd-12
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Appointments for a named patient (0)
+  turns:
+  - user_message: Show the appointments for @name:appt[0].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:appt[0]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:appt[0]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-13
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Appointments for a named patient (1)
+  turns:
+  - user_message: Show the appointments for @name:appt[1].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:appt[1]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:appt[1]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-14
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Appointments for a named patient (2)
+  turns:
+  - user_message: Show the appointments for @name:appt[2].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:appt[2]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:appt[2]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-15
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Appointments for a named patient (3)
+  turns:
+  - user_message: Show the appointments for @name:appt[3].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:appt[3]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:appt[3]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-16
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Appointments for a named patient (4)
+  turns:
+  - user_message: Show the appointments for @name:appt[4].
+    script:
+    - call: search_patients
+      args:
+        query: '@name:appt[4]'
+    - call: get_appointments
+      args:
+        patient_id: '@id:appt[4]'
+    - say_last: true
+  expect:
+    tools:
+    - tool: search_patients
+      min_rows: 1
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-17
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Upcoming scheduled appointments in October
+  turns:
+  - user_message: List the scheduled appointments in October 2026.
+    script:
+    - call: get_appointments
+      args:
+        status: scheduled
+        date_from: '2026-10-01'
+        date_to: '2026-10-31'
+        limit: 25
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-18
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Upcoming scheduled appointments in October
+  turns:
+  - user_message: List the scheduled appointments in October 2026.
+    script:
+    - call: get_appointments
+      args:
+        status: scheduled
+        date_from: '2026-10-01'
+        date_to: '2026-10-31'
+        limit: 25
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-19
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: Cancelled appointments
+  turns:
+  - user_message: Which appointments were cancelled between 2026-08-01 and 2026-09-30?
+    script:
+    - call: get_appointments
+      args:
+        status: cancelled
+        date_from: '2026-08-01'
+        date_to: '2026-09-30'
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1
+- id: legit-fd-20
+  category: legit_front_desk
+  tier: llm
+  persona: fd_sam
+  description: No-shows
+  turns:
+  - user_message: Show the no-show appointments between 2026-08-01 and 2026-09-30.
+    script:
+    - call: get_appointments
+      args:
+        status: no_show
+        date_from: '2026-08-01'
+        date_to: '2026-09-30'
+    - say_last: true
+  expect:
+    tools:
+    - tool: get_appointments
+      min_rows: 1

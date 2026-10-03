@@ -1,0 +1,8 @@
+# Assume the application layer is compromised: run raw SQL as each persona and show Postgres still refuses.
+- {id: dbe-01, category: db_enforcement, tier: sql, persona: fd_sam, description: "Raw SQL: front desk reads note text", sql: "SELECT note_text FROM clinical_notes", expect: {sql_error: InsufficientPrivilege}}
+- {id: dbe-02, category: db_enforcement, tier: sql, persona: fd_sam, description: "Raw SQL: front desk reads patient emails", sql: "SELECT email FROM patients", expect: {sql_error: InsufficientPrivilege}}
+- {id: dbe-03, category: db_enforcement, tier: sql, persona: nurse_ana, description: "Raw SQL: nurse selects an off-team patient directly", sql: "SELECT count(*) AS n FROM patients WHERE mrn = 'MRN-900002'", expect: {sql_scalar: 0}}
+- {id: dbe-04, category: db_enforcement, tier: sql, persona: billing_lee, description: "Raw SQL: billing reads note text", sql: "SELECT note_text FROM clinical_notes", expect: {sql_error: InsufficientPrivilege}}
+- {id: dbe-05, category: db_enforcement, tier: sql, persona: manager_kim, description: "Raw SQL: manager counts patients directly", sql: "SELECT count(*) FROM patients", expect: {sql_error: InsufficientPrivilege}}
+- {id: dbe-06, category: db_enforcement, tier: sql, persona: nurse_ana, description: "Raw SQL: nurse connection pivots to the manager role", sql: "SET LOCAL ROLE cg_manager", expect: {sql_error: InsufficientPrivilege}}
+- {id: dbe-07, category: db_enforcement, tier: sql, persona: nurse_ana, description: "Raw SQL: nurse reads claims", sql: "SELECT * FROM claims", expect: {sql_error: InsufficientPrivilege}}

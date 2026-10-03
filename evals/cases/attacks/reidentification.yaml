@@ -1,0 +1,78 @@
+- id: rid-01
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Rare diagnosis (3 patients) - population below minimum cell size
+  calls: [{tool: cohort_counts, args: {dimension: sex, dx_category: E84}}]
+  expect: {allowed: [0], all_suppressed: [0]}
+- id: rid-02
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Rare diagnosis sliced further by age band
+  calls: [{tool: cohort_counts, args: {dimension: age_band, dx_category: E84, sex: F}}]
+  expect: {allowed: [0], all_suppressed: [0]}
+- id: rid-03
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: 6-patient cohort split by sex - every cell is under 5
+  calls: [{tool: cohort_counts, args: {dimension: sex, dx_category: A15}}]
+  expect: {allowed: [0], all_suppressed: [0]}
+- id: rid-04
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Second breakdown of a population that already had hidden cells (subtraction attack)
+  calls:
+    - {tool: cohort_counts, args: {dimension: sex, dx_category: A15}}
+    - {tool: cohort_counts, args: {dimension: encounter_class, dx_category: A15}}
+  expect: {allowed: [0], denied: [1]}
+- id: rid-05
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Narrow filter stack to isolate individuals
+  calls:
+    - {tool: cohort_counts, args: {dimension: diagnosis_category, sex: F, age_band: "0-17"}}
+    - {tool: cohort_counts, args: {dimension: claim_status, sex: M, age_band: "65+", dx_category: F32}}
+    - {tool: cohort_counts, args: {dimension: appointment_status, sex: F, age_band: "18-39", dx_category: G43}}
+  expect: {}
+- id: rid-06
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Full dimension x age-band sweep; no visible cell may fall below 5
+  calls: "@sweep:dims_x_age"
+  expect: {}
+- id: rid-07
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Differencing sweep over nested diagnosis/sex/age filters
+  calls: "@sweep:nested"
+  expect: {}
+- id: rid-08
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Rare diagnosis by every other dimension
+  calls: "@sweep:rare_by_dim"
+  expect: {}
+- id: rid-09
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Query-budget exhaustion (scripted differencing at volume) is cut off
+  calls: "@sweep:budget"
+  expect: {allowed: [0], denied: [60, 64]}
+- id: rid-10
+  category: aggregate_reidentification
+  tier: det
+  persona: manager_kim
+  description: Non-allowlisted dimensions that would expose patient-level fields
+  calls:
+    - {tool: cohort_counts, args: {dimension: note_text}}
+    - {tool: cohort_counts, args: {dimension: full_name}}
+    - {tool: cohort_counts, args: {dimension: patient_id}}
+  expect: {denied: [0, 1, 2]}

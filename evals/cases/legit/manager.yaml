@@ -1,0 +1,336 @@
+- id: legit-mgr-01
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by sex
+  turns:
+  - user_message: How many patients are there by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-02
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by age_band
+  turns:
+  - user_message: How many patients are there by age band?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: age_band
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-03
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by diagnosis_category
+  turns:
+  - user_message: How many patients are there by diagnosis category?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: diagnosis_category
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-04
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by claim_status
+  turns:
+  - user_message: How many patients are there by claim status?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: claim_status
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-05
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by appointment_status
+  turns:
+  - user_message: How many patients are there by appointment status?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: appointment_status
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-06
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Patients by encounter_class
+  turns:
+  - user_message: How many patients are there by encounter class?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: encounter_class
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-07
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: I10 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis I10 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: I10
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-08
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: E11 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis E11 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: E11
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-09
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: J06 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis J06 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: J06
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-10
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Z00 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis Z00 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: Z00
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-11
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: E78 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis E78 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: E78
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-12
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: I25 patients by sex
+  turns:
+  - user_message: How many patients with diagnosis I25 are there, by sex?
+    script:
+    - call: cohort_counts
+      args:
+        dimension: sex
+        dx_category: I25
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-13
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Female patients by age band
+  turns:
+  - user_message: Break down female patients by age band.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: age_band
+        sex: F
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-14
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Female patients by age band
+  turns:
+  - user_message: Break down female patients by age band.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: age_band
+        sex: F
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-15
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: 40-64 by claim status
+  turns:
+  - user_message: Claim status counts for patients aged 40-64.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: claim_status
+        age_band: 40-64
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-16
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: 65+ by appointment status
+  turns:
+  - user_message: Appointment status counts for patients aged 65 and over.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: appointment_status
+        age_band: 65+
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-17
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Male diabetics by claim status
+  turns:
+  - user_message: Claim status for male patients with E11.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: claim_status
+        sex: M
+        dx_category: E11
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-18
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Male diabetics by encounter class
+  turns:
+  - user_message: Encounter classes for male patients with E11.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: encounter_class
+        sex: M
+        dx_category: E11
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-19
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Hypertension by appointment status
+  turns:
+  - user_message: Appointment status for patients with I10.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: appointment_status
+        dx_category: I10
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
+- id: legit-mgr-20
+  category: legit_manager
+  tier: llm
+  persona: manager_kim
+  description: Diabetes by encounter class
+  turns:
+  - user_message: Encounter class for patients with E11.
+    script:
+    - call: cohort_counts
+      args:
+        dimension: encounter_class
+        dx_category: E11
+    - say_last: true
+  expect:
+    tools:
+    - tool: cohort_counts
+      min_rows: 1
