@@ -1,0 +1,27 @@
+# Single-container image for FREE hosting (Render free web service, Fly, HF Spaces, ...): Postgres 16 + API.
+# SYNTHETIC DATA ONLY. The database lives inside the container and is rebuilt and re-seeded on every start.
+FROM postgres:16-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
+    PGBIN=/usr/lib/postgresql/16/bin PATH=/opt/venv/bin:$PATH
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 python3-venv \
+ && rm -rf /var/lib/apt/lists/* \
+ && python3 -m venv /opt/venv
+
+WORKDIR /srv
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY app ./app
+COPY db ./db
+COPY scripts ./scripts
+COPY evals/results.mock.json evals/results.real.jso[n] ./evals/
+
+RUN useradd --system --uid 10001 --no-create-home clinicalgate \
+ && chmod +x scripts/*.sh
+
+EXPOSE 8000
+ENTRYPOINT ["/srv/scripts/demo_entrypoint.sh"]
+CMD []

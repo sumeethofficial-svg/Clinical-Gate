@@ -1,30 +1,15 @@
-# Render Blueprint: managed Postgres + Docker web service. Synthetic data only.
-# The service's start-up (scripts/entrypoint.sh) runs migrations, creates the per-persona logins, seeds the
-# demo database, then starts the API WITHOUT the admin connection string in its environment.
-databases:
-  - name: clinicalgate-db
-    plan: free
-    databaseName: clinicalgate
-    user: clinicalgate_admin
-
+# Render Blueprint, FREE tier: one Docker web service running Postgres 16 + the API in a single container
+# (Dockerfile.demo). The database is private to the container and rebuilt + re-seeded from the deterministic
+# synthetic generator on every start. Nothing persists, by design. Synthetic data only.
 services:
   - type: web
     name: clinicalgate
     runtime: docker
+    dockerfilePath: ./Dockerfile.demo
     plan: free
     healthCheckPath: /health
     envVars:
-      - key: DATABASE_URL
-        fromDatabase: {name: clinicalgate-db, property: connectionString}
-      - key: CG_APP_PASSWORD
-        generateValue: true
-      - key: JWT_SECRET
-        generateValue: true
-      - key: DEMO_PASSWORD
-        sync: false            # set in the dashboard; shown on the demo page for visitors
+      - key: DEMO_PASSWORD      # you will be prompted for this on first deploy; it is shown to demo visitors
+        sync: false
       - key: LLM_PROVIDER
-        value: heuristic       # or anthropic / openai (then also set the matching *_API_KEY)
-      - key: ANTHROPIC_API_KEY
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
+        value: heuristic        # key-free rule-based assistant. Optional: anthropic/openai + matching *_API_KEY

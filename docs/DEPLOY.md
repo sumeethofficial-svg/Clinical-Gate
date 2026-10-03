@@ -1,34 +1,40 @@
-# Deploying ClinicalGate (Render or Fly.io)
+# Deploying ClinicalGate for free
 
-Everything served is synthetic. Because the demo is public, the demo password is public too; use a throwaway `DEMO_PASSWORD`.
+Everything served is synthetic. The demo password is public by design; pick a throwaway `DEMO_PASSWORD`.
 
-## What the container does at start-up
+## How the free deployment works
 
-`scripts/entrypoint.sh`: derive `DATABASE_URL_APP` from `DATABASE_URL` → run migrations → create the six `cg_app_<persona>` login roles with `CG_APP_PASSWORD` → seed the demo data if the database is empty → start `uvicorn` **with the admin `DATABASE_URL` and `CG_APP_PASSWORD` removed from its environment**. Requests are served only through the low-privilege per-persona logins.
+`Dockerfile.demo` builds **one container with Postgres 16 and the API**. On every start `scripts/demo_entrypoint.sh`:
 
-**Requirement:** the database user in `DATABASE_URL` must be able to `CREATE ROLE` (migrations create the persona roles and logins). Hosted Postgres plans that forbid this will fail at migration `002`; use a plan/user that allows it, or pre-create the roles from `db/migrations/002_roles_rls.sql` and `db/migrate.py::ensure_app_role` by hand.
+1. creates a fresh, loopback-only Postgres cluster with a random superuser password,
+2. runs the migrations, creates the six `cg_app_<persona>` logins, and seeds the deterministic synthetic data,
+3. starts the web server as a **different OS user** with the admin connection string and bootstrap password removed from its environment (it also cannot read the Postgres data directory).
 
-## Render (Blueprint)
+Why not a hosted free Postgres? Free tiers tend to expire (Render's free Postgres has been limited to 30 days), and our migrations need `CREATE ROLE`, which managed plans may not allow. Owning the database inside the container removes both problems. Trade-off: data and the audit log reset whenever the container restarts. That is fine for a demo of seeded synthetic data and is stated in the README.
 
-1. Push the repo to GitHub. In Render: **New → Blueprint** and select the repo (`render.yaml` provisions Postgres + a Docker web service; `JWT_SECRET` and `CG_APP_PASSWORD` are generated).
-2. In the service's environment set `DEMO_PASSWORD`. Optional: `LLM_PROVIDER=anthropic|openai` and the matching `*_API_KEY`.
-3. Wait for the health check at `/health`, open the URL, sign in with a demo user.
-4. Put the URL at the top of `README.md`.
+Verified locally against Postgres 16 in both modes: as root (Postgres as `postgres`, web as `clinicalgate`) and as an unprivileged user. The Docker build itself has not been run by the author. If the first Render build fails, open the build log and send me the error.
 
-## Fly.io
+## Render (recommended)
 
-```bash
-fly launch --no-deploy --copy-config          # uses fly.toml
-fly postgres create --name clinicalgate-db && fly postgres attach clinicalgate-db   # sets DATABASE_URL
-fly secrets set CG_APP_PASSWORD=$(openssl rand -hex 24) JWT_SECRET=$(openssl rand -hex 32) DEMO_PASSWORD='<public demo password>'
-fly deploy
-```
+1. Push the repo to GitHub (see the main README / step list).
+2. Render dashboard → **New → Blueprint** → connect GitHub → select the repo. It reads `render.yaml`.
+3. When prompted, set `DEMO_PASSWORD` (e.g. `clinicalgate-demo`). Click **Apply**.
+4. Wait for the build (about 5 to 8 minutes the first time) and the `/health` check to go green.
+5. Open the `https://clinicalgate-xxxx.onrender.com` URL, click a role, enter the demo password.
+6. Paste the URL at the top of `README.md` and commit.
 
-(If the attached Postgres user cannot create roles, use a Postgres provider that allows it, or pre-create the roles as above.)
+**Free-tier behaviour:** the service sleeps after ~15 minutes without traffic. The first request afterwards takes roughly 30 to 60 seconds while the container starts, Postgres initialises and the data re-seeds. Open the URL a minute before a demo. Memory use measured locally is about 200 MB, inside the 512 MB free limit.
+
+## Other free hosts (same image)
+
+Anything that runs a Docker image works, because the entrypoint supports both root and non-root users and honours `$PORT`: Fly.io (`deploy/fly.managed-db.toml` is for a managed Postgres; for the single-container image use `fly launch` with `--dockerfile Dockerfile.demo`), Koyeb, Hugging Face Spaces (Docker SDK; set the Space port to 7860 and `PORT=7860`). Free-tier terms change, so check each provider's current limits.
+
+## Optional: managed Postgres
+
+`deploy/render.managed-db.yaml` and `deploy/fly.managed-db.toml` use the regular `Dockerfile` with a hosted database. The database user must be allowed to `CREATE ROLE`. Use these only if you want data to persist.
 
 ## After deploying
 
-- `curl https://<url>/health` → `{"status":"ok","synthetic_data_only":true}`
-- Re-run the red-team suite against a *disposable* copy of the schema, never against anything holding real data: `make eval` (locally or in CI).
-- To re-seed: set `RESEED=1` for one start-up, then unset it.
-- Rotate `JWT_SECRET` to invalidate all sessions.
+- `curl https://<url>/health` returns `{"status":"ok","synthetic_data_only":true}`.
+- Real-model behaviour: set `LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` in the Render environment (the red-team numbers come from `make eval-real` run locally or in CI, not from the live site).
+- Rotate sessions by restarting the service (the signing secret is random per start).
